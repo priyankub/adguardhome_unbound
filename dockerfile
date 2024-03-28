@@ -15,7 +15,4 @@ RUN wget https://www.internic.net/domain/named.root -qO- | tee /var/lib/unbound/
 COPY adguard.conf /etc/unbound/unbound.conf.d/adguard.conf
 
 # Clean up and set the default user
-RUN rm -rf /var/lib/apt/lists/* \
-&& usermod -aG docker $USER \
-&& userdel -r unbound \
-&& chown root:root /etc/unbound/unbound.conf.d/adguard.conf
+RUN rm -rf /var/lib/apt/lists/* 
