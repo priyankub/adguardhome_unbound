@@ -14,5 +14,11 @@ RUN wget https://www.internic.net/domain/named.root -qO- | tee /var/lib/unbound/
 # Configure Unbound
 COPY adguard.conf /etc/unbound/unbound.conf.d/adguard.conf
 
+# Expose port 80, 443, 53, 3000 to the outside world
+EXPOSE 53
+EXPOSE 80
+EXPOSE 443
+EXPOSE 3000
+
 # Clean up and set the default user
 RUN rm -rf /var/lib/apt/lists/* 
