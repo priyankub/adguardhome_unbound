@@ -13,6 +13,8 @@ WORKDIR /tmp
 RUN wget https://static.adguard.com/adguardhome/release/AdGuardHome_linux_amd64.tar.gz
 RUN mkdir /opt/AdGuardHome
 RUN tar -C /opt -f AdGuardHome_linux_amd64.tar.gz -x -z
+WORKDIR /opt/AdGuardHome
+RUN ./AdGuardHome -s install -c /opt/AdGuardHome/data/AdGuardHome.yaml 
 # Install the unbound root hints file
 RUN wget https://www.internic.net/domain/named.root -qO- | tee /var/lib/unbound/root.hints
 
@@ -23,6 +25,8 @@ COPY entrypoint.sh /home/entrypoint.sh
 # Set working directory and cleanup
 RUN rm -rf /tmp/*
 WORKDIR /home
+
+EXPOSE 53
 
 # Define entrypoint
 ENTRYPOINT ["bash", "./entrypoint.sh"]

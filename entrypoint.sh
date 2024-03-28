@@ -4,7 +4,7 @@
 service unbound start
 # Start the AdGuardHome service
 cd /opt/AdGuardHome
-./AdGuardHome -s install -c /opt/AdGuardHome/data/AdGuardHome.yaml 
+./AdGuardHome -s start
 
 # Keep the container running
 tail -f /dev/null
