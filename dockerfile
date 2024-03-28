@@ -9,7 +9,7 @@ RUN apt-get update \
 RUN curl -s -S -L https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- -v
 
 # Install the unbound root hints file
-RUN wget https://www.internic.net/domain/named.root -qO- | sudo tee /var/lib/unbound/root.hints
+RUN wget https://www.internic.net/domain/named.root -qO- | tee /var/lib/unbound/root.hints
 
 # Configure Unbound
 COPY adguard.conf /etc/unbound/unbound.conf.d/adguard.conf
