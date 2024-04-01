@@ -5,7 +5,9 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Install curl, unbound, and wget
 RUN apt-get update \
 && apt-get install -y curl wget unbound dnsutils iproute2 traceroute nano htop tcpdump \
-&& rm -rf /var/lib/apt/lists/*
+&& rm -rf /var/lib/apt/lists/* \
+&& rm -rf /var/cache/apt \
+&& apt-get clean
 
 # Download the AdGuardHome script
 #RUN curl -s -S -L https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- -v -c /opt/AdGuardHome/data/AdGuardHome.yaml
@@ -27,6 +29,9 @@ RUN rm -rf /tmp/*
 WORKDIR /home
 
 EXPOSE 53
+EXPOSE 33000
+EXPOSE 380
+EXPOSE 3443
 
 # Define entrypoint
 ENTRYPOINT ["bash", "./entrypoint.sh"]
