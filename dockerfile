@@ -4,7 +4,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # Install curl, unbound, and wget
 RUN apt-get update \
-&& apt-get install -y curl wget unbound dnsutils iproute2 traceroute nano vim htop nmap tcpdump \
+&& apt-get install -y curl wget unbound dnsutils iproute2 traceroute nano htop tcpdump \
 && rm -rf /var/lib/apt/lists/*
 
 # Download the AdGuardHome script
