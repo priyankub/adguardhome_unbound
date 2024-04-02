@@ -28,11 +28,11 @@ COPY entrypoint.sh /home/entrypoint.sh
 RUN rm -rf /tmp/*
 WORKDIR /home
 
-EXPOSE 53/tcp
-EXPOSE 53/udp
-EXPOSE 3000
-EXPOSE 80
-EXPOSE 443
+# EXPOSE 53/tcp
+# EXPOSE 53/udp
+# EXPOSE 3000
+# EXPOSE 80
+# EXPOSE 443
 
 # Define entrypoint
 ENTRYPOINT ["bash", "./entrypoint.sh"]
