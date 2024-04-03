@@ -4,7 +4,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # Install curl, unbound, and wget
 RUN apt-get update \
-&& apt-get install -y curl wget unbound dnsutils iproute2 traceroute nano htop tcpdump \
+&& apt-get install -y curl wget unbound dnsutils iproute2 traceroute nano htop tcpdump iputils-ping telnet \
 && rm -rf /var/lib/apt/lists/* \
 && rm -rf /var/cache/apt \
 && apt-get clean
@@ -30,8 +30,8 @@ WORKDIR /home
 
 EXPOSE 53/tcp
 EXPOSE 53/udp
-#EXPOSE 3000
-#EXPOSE 80
+EXPOSE 3000
+EXPOSE 80
 EXPOSE 443
 
 # Define entrypoint
