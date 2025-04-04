@@ -4,10 +4,7 @@
     "dependencyDashboard": true,
     "labels": ["dependencies", "no-stale"],
     "commitMessagePrefix": "⬆️",
-    "commitMessageTopic": "{{depName}}",    
-    "extends": [
-      "github>renovatebot/renovate-config:base"
-    ],
+    "commitMessageTopic": "{{depName}}",
     "packageRules": [
       {
         "matchDepNames": ["AdguardTeam/AdGuardHome"],
