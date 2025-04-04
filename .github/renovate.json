@@ -1,0 +1,26 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "rebaseWhen": "behind-base-branch",
+    "dependencyDashboard": true,
+    "labels": ["dependencies", "no-stale"],
+    "commitMessagePrefix": "⬆️",
+    "commitMessageTopic": "{{depName}}",    
+    "extends": [
+      "github>renovatebot/renovate-config:base"
+    ],
+    "packageRules": [
+      {
+        "matchDepNames": ["AdguardTeam/AdGuardHome"],
+        "matchUpdateTypes": ["patch"],
+        "postUpgradeTasks": {
+          "commands": [
+            "gh workflow run deploy.yml"
+          ],
+          "fileFilters": [],
+          "executionMode": "branch"
+        },
+        "automerge": true,
+        "labels": ["AdGuardHome Release", "deploy"]
+      }
+    ]
+    }    
