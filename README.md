@@ -35,3 +35,69 @@ services:
     volumes:
       - /host:/opt/AdGuardHome/work
       - /host:/opt/AdGuardHome/data
+
+```
+
+### Initial Bootstrap Step
+
+1. Start the stack: `docker compose up -d`
+2. Navigate to `http://<YOUR_SERVER_IP>:3000` to run the one-time AdGuard setup wizard.
+3. **Crucial Dashboard Settings:** Inside the wizard or later under Settings, configure the **Upstream DNS Server** entry to point exclusively to:
+```text
+127.0.0.1:53
+
+```
+
+
+This locks AdGuard Home into forcing its resolving tracking downward through the local Unbound recursion path.
+
+---
+
+## Automated Repository Lifecycle
+
+This repository utilizes fully automated GitOps pipelines to stay up to date and clean of security vulnerabilities:
+
+### 1. Automated Dependency Tracking (Renovate)
+
+* **Frequency:** Checks for upstream releases continuously.
+* **Stability Gate:** Implements a strict `3 days` minimum release maturity window. Renovate will not touch a release until it has sat unchanged for 72 hours, insulating your infrastructure from day-one regressions.
+* **Auto-Merge:** If upstream minor or patch releases pass full validation, Renovate automatically handles the merge back into the main branch.
+
+### 2. Multi-Architecture Compilation (GitHub Actions)
+
+On every commit to `main`, the `.github/workflows/deploy.yml` pipeline triggers:
+
+* Emulates environment layouts via `QEMU`.
+* Leverages `Docker Buildx` to build and tag `linux/amd64` and `linux/arm64` image profiles concurrently.
+* Publishes a combined manifest to the GitHub Container Registry (`ghcr.io`).
+
+---
+
+## Development & Manual Builds
+
+If you need to make changes to `entrypoint.sh` or `adguard.conf` and test locally:
+
+### Prerequisites
+
+Ensure your local Docker installation has Buildx active. If building across architectures manually on your machine, register QEMU handlers:
+
+```bash
+docker run --privileged --rm tonistiigi/binfmt --install all
+
+```
+
+### Build Image Locally
+
+```bash
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  -t ghcr.io/priyankub/adguardhome_unbound:local \
+  --load .
+
+```
+
+---
+
+## Security Policy
+
+Please consult [SECURITY.md](SECURITY.md) to report vulnerabilities or configuration bugs privately. Public issues exposing active exploit logic are explicitly discouraged.
