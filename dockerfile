@@ -2,7 +2,7 @@ FROM ubuntu:24.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 # Explicitly track the version so Renovate can see it
-ARG ADGUARD_VERSION=v0.107.56
+ARG ADGUARD_VERSION=v0.107.77
 # Native Docker variable populated automatically during build (amd64, arm64)
 ARG TARGETARCH
 
