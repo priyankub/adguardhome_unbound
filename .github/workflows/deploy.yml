@@ -6,6 +6,10 @@ on:
       - main
   workflow_dispatch: # Allows you to manually trigger a build from the UI
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
