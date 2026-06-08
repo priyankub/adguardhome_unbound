@@ -1,23 +1,25 @@
 {
-    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "rebaseWhen": "behind-base-branch",
-    "dependencyDashboard": true,
-    "labels": ["dependencies", "no-stale"],
-    "commitMessagePrefix": "⬆️",
-    "commitMessageTopic": "{{depName}}",
-    "packageRules": [
-      {
-        "matchDepNames": ["AdguardTeam/AdGuardHome"],
-        "matchUpdateTypes": ["patch"],
-        "postUpgradeTasks": {
-          "commands": [
-            "gh workflow run deploy.yml"
-          ],
-          "fileFilters": [],
-          "executionMode": "branch"
-        },
-        "automerge": true,
-        "labels": ["AdGuardHome Release", "deploy"]
-      }
-    ]
-    }    
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "rebaseWhen": "behind-base-branch",
+  "dependencyDashboard": true,
+  "labels": ["dependencies", "no-stale"],
+  "commitMessagePrefix": "⬆️",
+  "commitMessageTopic": "{{depName}}",
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["(^|/)dockerfile$"],
+      "matchStrings": ["ARG ADGUARD_VERSION=(?<currentValue>v\\d+\\.\\d+\\.\\d+)"],
+      "depNameTemplate": "AdguardTeam/AdGuardHome",
+      "datasourceTemplate": "github-releases"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchDepNames": ["AdguardTeam/AdGuardHome"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "automerge": true,
+      "labels": ["AdGuardHome Release", "deploy"]
+    }
+  ]
+}

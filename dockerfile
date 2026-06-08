@@ -1,22 +1,28 @@
 FROM ubuntu:24.04
 
 ARG DEBIAN_FRONTEND=noninteractive
+# Explicitly track the version so Renovate can see it
+ARG ADGUARD_VERSION=v0.107.56
+# Native Docker variable populated automatically during build (amd64, arm64)
+ARG TARGETARCH
 
-# Install curl, unbound, and wget
+# Install system dependencies
 RUN apt-get update \
-&& apt-get install -y curl wget unbound dnsutils iproute2 traceroute nano htop tcpdump iputils-ping telnet \
-&& rm -rf /var/lib/apt/lists/* \
-&& rm -rf /var/cache/apt \
-&& apt-get clean
+    && apt-get install -y curl wget unbound dnsutils iproute2 traceroute nano htop tcpdump iputils-ping telnet \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /var/cache/apt \
+    && apt-get clean
 
-# Download the AdGuardHome script
-#RUN curl -s -S -L https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- -v -c /opt/AdGuardHome/data/AdGuardHome.yaml
+# Download the architecture-appropriate AdGuardHome binary dynamically
 WORKDIR /tmp
-RUN wget https://static.adguard.com/adguardhome/release/AdGuardHome_linux_amd64.tar.gz
-RUN mkdir /opt/AdGuardHome
-RUN tar -C /opt -f AdGuardHome_linux_amd64.tar.gz -x -z
+RUN wget https://github.com/AdguardTeam/AdGuardHome/releases/download/${ADGUARD_VERSION}/AdGuardHome_linux_${TARGETARCH}.tar.gz \
+    && mkdir -p /opt \
+    && tar -C /opt -f AdGuardHome_linux_${TARGETARCH}.tar.gz -x -z \
+    && rm -rf /tmp/*
+
 WORKDIR /opt/AdGuardHome
 RUN ./AdGuardHome -s install -c /opt/AdGuardHome/data/AdGuardHome.yaml 
+
 # Install the unbound root hints file
 RUN wget https://www.internic.net/domain/named.root -qO- | tee /var/lib/unbound/root.hints
 
@@ -24,8 +30,6 @@ RUN wget https://www.internic.net/domain/named.root -qO- | tee /var/lib/unbound/
 COPY adguard.conf /etc/unbound/unbound.conf.d/adguard.conf
 COPY entrypoint.sh /home/entrypoint.sh
 
-# Set working directory and cleanup
-RUN rm -rf /tmp/*
 WORKDIR /home
 
 EXPOSE 53/tcp
@@ -34,5 +38,4 @@ EXPOSE 3000
 EXPOSE 80
 EXPOSE 443
 
-# Define entrypoint
 ENTRYPOINT ["bash", "./entrypoint.sh"]
