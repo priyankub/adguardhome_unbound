@@ -8,7 +8,9 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": ["(^|/)dockerfile$"],
+      "managerFilePatterns": [
+        "/(^|/)dockerfile$/"
+      ],
       "matchStrings": ["ARG ADGUARD_VERSION=(?<currentValue>v\\d+\\.\\d+\\.\\d+)"],
       "depNameTemplate": "AdguardTeam/AdGuardHome",
       "datasourceTemplate": "github-releases"
