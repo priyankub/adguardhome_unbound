@@ -19,7 +19,13 @@
       "matchDepNames": ["AdguardTeam/AdGuardHome"],
       "matchUpdateTypes": ["patch", "minor"],
       "automerge": true,
-      "labels": ["AdGuardHome Release", "deploy"]
+      "automergeType": "pr",
+      "platformAutomerge": true,
+      "labels": ["AdGuardHome Release", "deploy"],
+      
+      "minimumReleaseAge": "3 days",
+      
+      "internalChecksFilter": "strict"
     }
   ]
 }
