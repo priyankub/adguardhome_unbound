@@ -1,41 +1,65 @@
-FROM ubuntu:26.04
+# ==========================================
+# STAGE 1: Builder Layer
+# ==========================================
+FROM alpine:latest AS builder
 
-ARG DEBIAN_FRONTEND=noninteractive
-# Explicitly track the version so Renovate can see it
+# Track the version for Renovate automation visibility
 ARG ADGUARD_VERSION=v0.107.77
-# Native Docker variable populated automatically during build (amd64, arm64)
+# Populated automatically by Docker Buildx during compilation
 ARG TARGETARCH
 
-# Install system dependencies
-RUN apt-get update \
-    && apt-get install -y curl wget unbound dnsutils iproute2 traceroute nano htop tcpdump iputils-ping telnet \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /var/cache/apt \
-    && apt-get clean
+RUN apk add --no-cache curl wget tar
 
-# Download the architecture-appropriate AdGuardHome binary dynamically
 WORKDIR /tmp
-RUN wget https://github.com/AdguardTeam/AdGuardHome/releases/download/${ADGUARD_VERSION}/AdGuardHome_linux_${TARGETARCH}.tar.gz \
+
+# Download and extract the architecture-appropriate AdGuard Home binary
+RUN wget -q https://github.com/AdguardTeam/AdGuardHome/releases/download/${ADGUARD_VERSION}/AdGuardHome_linux_${TARGETARCH}.tar.gz \
     && mkdir -p /opt \
     && tar -C /opt -f AdGuardHome_linux_${TARGETARCH}.tar.gz -x -z \
     && rm -rf /tmp/*
 
+# Securely grab the authoritative DNS root zone hints file
+RUN wget -q https://www.internic.net/domain/named.root -O /tmp/named.root
+
+# ==========================================
+# STAGE 2: Ultra-Light Runtime Layer
+# ==========================================
+FROM alpine:latest
+
+# Install only necessary runtime components:
+# - unbound: Core caching resolver
+# - bash: To reliably run our multi-process orchestration entrypoint script
+# - ca-certificates: Required for secure external connections
+# - bind-tools, tcpdump, htop: Stripped diagnostic utilities
+RUN apk add --no-cache \
+    unbound \
+    bash \
+    ca-certificates \
+    bind-tools \
+    tcpdump \
+    htop
+
+# Re-create optimized running target environment layout
 WORKDIR /opt/AdGuardHome
-RUN ./AdGuardHome -s install -c /opt/AdGuardHome/data/AdGuardHome.yaml 
+RUN mkdir -p /opt/AdGuardHome/work /opt/AdGuardHome/data /var/lib/unbound
 
-# Install the unbound root hints file
-RUN wget https://www.internic.net/domain/named.root -qO- | tee /var/lib/unbound/root.hints
+# Copy pre-packaged items directly from the Builder stage
+COPY --from=builder /opt/AdGuardHome/AdGuardHome /opt/AdGuardHome/AdGuardHome
+COPY --from=builder /tmp/named.root /var/lib/unbound/root.hints
 
-# Configure Unbound
-COPY adguard.conf /etc/unbound/unbound.conf.d/adguard.conf
+# Inject local infrastructure configurations
+COPY adguard.conf /etc/unbound/unbound.conf
 COPY entrypoint.sh /home/entrypoint.sh
+
+RUN chmod +x /home/entrypoint.sh
 
 WORKDIR /home
 
+# Expose standard DNS and management interfaces
 EXPOSE 53/tcp
 EXPOSE 53/udp
 EXPOSE 3000
 EXPOSE 80
 EXPOSE 443
 
-ENTRYPOINT ["bash", "./entrypoint.sh"]
+ENTRYPOINT ["/home/entrypoint.sh"]
