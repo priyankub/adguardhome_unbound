@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # Set up QEMU for emulation so an x86 runner can compile ARM64 binaries
       - name: Set up QEMU
