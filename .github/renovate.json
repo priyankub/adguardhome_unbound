@@ -5,6 +5,8 @@
   "labels": ["dependencies", "no-stale"],
   "commitMessagePrefix": "⬆️",
   "commitMessageTopic": "{{depName}}",
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 0,
   "customManagers": [
     {
       "customType": "regex",
@@ -24,10 +26,16 @@
       "automergeType": "pr",
       "platformAutomerge": true,
       "labels": ["AdGuardHome Release", "deploy"],
-      
+
       "minimumReleaseAge": "3 days",
-      
+
       "internalChecksFilter": "strict"
+    },
+    {
+      "matchPackageNames": ["*"],
+      "groupName": "All Homelab Dependencies",
+      "groupSlug": "all-homelab-deps",
+      "description": "Squash all incoming dependency updates into a single consolidated branch to eliminate separate commit noise."
     }
   ]
 }
