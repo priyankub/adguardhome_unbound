@@ -35,7 +35,6 @@
       "matchPackageNames": ["*"],
       "groupName": "All Homelab Dependencies",
       "groupSlug": "all-homelab-deps",
-      "squash": true,
       "description": "Squash all incoming dependency updates into a single consolidated branch to eliminate separate commit noise."
     }
   ]
