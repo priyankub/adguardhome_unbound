@@ -32,7 +32,7 @@
       "internalChecksFilter": "strict"
     },
     {
-      "matchPackageNames": ["*"],
+      "matchPackagePatterns": ["*"],
       "groupName": "All Homelab Dependencies",
       "groupSlug": "all-homelab-deps",
       "description": "Squash all incoming dependency updates into a single consolidated branch to eliminate separate commit noise."
