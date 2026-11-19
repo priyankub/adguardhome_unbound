@@ -4,7 +4,7 @@
 FROM alpine:latest AS builder
 
 # Track the version for Renovate automation visibility
-ARG ADGUARD_VERSION=v0.107.80
+ARG ADGUARD_VERSION=v1.0.0
 # Populated automatically by Docker Buildx during compilation
 ARG TARGETARCH
 
